@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complaint Details - College Complaint Portal</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:#f5f7fa;}
+.container{display:flex;min-height:100vh;}
+.sidebar{width:260px;background:#fff;box-shadow:2px 0 10px rgba(0,0,0,0.1);}
+.sidebar-header{padding:25px;background:linear-gradient(135deg,#4361ee,#3a0ca3);color:#fff;}
+.sidebar-header h2{font-size:20px;}
+.nav-item{padding:15px 25px;display:flex;align-items:center;gap:10px;color:#555;text-decoration:none;border-left:4px solid transparent;}
+.nav-item:hover,.nav-item.active{background:#eef3ff;border-left-color:#4361ee;color:#4361ee;}
+.main-content{flex:1;padding:20px;}
+.header{background:#fff;padding:20px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-bottom:20px;display:flex;justify-content:space-between;}
+.card{background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);margin-bottom:20px;}
+.card-header{padding:20px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;}
+.card-body{padding:20px;}
+.btn{padding:10px 20px;border-radius:6px;font-weight:600;border:none;cursor:pointer;margin:3px;display:inline-flex;align-items:center;gap:8px;}
+.btn-warning{background:#ff9e00;color:#fff;}
+.btn-success{background:#4bb543;color:#fff;}
+.btn-danger{background:#e63946;color:#fff;}
+.btn-pdf{background:#b32919;color:#fff;}
+.btn-outline{border:1px solid #3a0ca3;color:#3a0ca3;background:transparent;}
+.status-badge{padding:6px 12px;border-radius:20px;font-weight:600;}
+.status-pending{background:#ffeeba;color:#856404;}
+.status-in-progress{background:#d6e6ff;color:#004085;}
+.status-resolved{background:#d4edda;color:#155724;}
+.detail-box{background:#f8f9fa;padding:15px;border-radius:8px;margin:10px 0;}
+.detail-item{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee;}
+.timeline-item{padding:10px;border-bottom:1px solid #eee;}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header"><h2>College Complaint Portal</h2><p>Complaint Details</p></div>
+    <a href="admin.html" class="nav-item"><i class="fas fa-tachometer-alt"></i>Dashboard</a>
+    <a href="all-complaint.html" class="nav-item"><i class="fas fa-inbox"></i>All Complaints</a>
+    <a href="pending.html" class="nav-item"><i class="fas fa-clock"></i>Pending</a>
+    <a href="resolved.html" class="nav-item"><i class="fas fa-check-circle"></i>Resolved</a>
+    <a href="#" class="nav-item active"><i class="fas fa-file-alt"></i>Complaint Details</a>
+</div>
+
+<!-- Main Area -->
+<div class="main-content">
+
+    <div class="header">
+        <h2 id="pageTitle">Complaint Details</h2>
+        <span>Hostel Administrator</span>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2 id="compId">Loading...</h2>
+            <span id="statusBadge" class="status-badge status-pending">Pending</span>
+        </div>
+
+        <div class="card-body">
+
+            <!-- Action Buttons -->
+            <button class="btn btn-warning" onclick="markInProgress()"><i class="fas fa-play"></i>Mark In Progress</button>
+            <button class="btn btn-success" onclick="openResolve()"><i class="fas fa-check"></i>Resolve Complaint</button>
+            <button class="btn btn-danger" id="reopenBtn" onclick="reopen()" style="display:none;"><i class="fas fa-redo"></i>Reopen</button>
+
+            <br>
+
+            <!-- PDF & JSON -->
+            <button class="btn btn-pdf" onclick="downloadPDF('detailed')"><i class="fas fa-file-pdf"></i> Detailed PDF</button>
+            <button class="btn btn-outline" onclick="downloadPDF('summary')"><i class="fas fa-file"></i> Summary PDF</button>
+            <button class="btn btn-outline" onclick="viewPDF()"><i class="fas fa-eye"></i> View PDF</button>
+            <button class="btn btn-outline" onclick="downloadJSON()"><i class="fas fa-download"></i> JSON</button>
+
+            <!-- Student Info -->
+            <h3>Student Information</h3>
+            <div class="detail-box">
+                <div class="detail-item"><b>Name:</b> <span id="studentName">-</span></div>
+                <div class="detail-item"><b>Student ID:</b> <span id="studentId">-</span></div>
+                <div class="detail-item"><b>Department:</b> <span id="department">-</span></div>
+            </div>
+
+            <!-- Complaint Info -->
+            <h3>Complaint Information</h3>
+            <div class="detail-box">
+                <div class="detail-item"><b>Category:</b> <span id="category">-</span></div>
+                <div class="detail-item"><b>Priority:</b> <span id="priority">-</span></div>
+                <div class="detail-item"><b>Submitted Date:</b> <span id="submittedDate">-</span></div>
+                <div class="detail-item"><b>Assigned To:</b> <span id="assignedTo">-</span></div>
+            </div>
+
+            <!-- Description -->
+            <h3>Description</h3>
+            <div class="detail-box">
+                <p id="description">Loading...</p>
+            </div>
+
+            <!-- Resolution if resolved -->
+            <div id="resolutionBox" style="display:none;">
+                <h3>Resolution Details</h3>
+                <div class="detail-box">
+                    <div class="detail-item"><b>Category:</b> <span id="resCategory">-</span></div>
+                    <div class="detail-item"><b>Time Spent:</b> <span id="resTime">-</span></div>
+                    <div class="detail-item"><b>Resolved By:</b> <span id="resBy">-</span></div>
+                    <div class="detail-item"><b>Resolved At:</b> <span id="resAt">-</span></div>
+                    <div class="detail-item"><b>Details:</b> <span id="resDetails">-</span></div>
+                </div>
+            </div>
+
+            <!-- Timeline -->
+            <h3>Timeline</h3>
+            <div id="timeline"></div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="database.js"></script>
+<script>
+const { jsPDF } = window.jspdf;
+let DATA = null;
+
+// Get ID from URL
+const CID = new URLSearchParams(location.search).get("id");
+
+// Load Data
+function load() {
+    DATA = complaintDB.getComplaint(CID);
+    if (!DATA) return alert("Complaint not found!");
+
+    document.getElementById("compId").innerText = DATA.complaintId;
+    document.getElementById("studentName").innerText = DATA.studentName;
+    document.getElementById("studentId").innerText = DATA.studentId;
+    document.getElementById("department").innerText = DATA.department;
+    document.getElementById("category").innerText = DATA.category;
+    document.getElementById("priority").innerText = DATA.priority;
+    document.getElementById("submittedDate").innerText = DATA.submittedDate;
+    document.getElementById("assignedTo").innerText = DATA.assignedTo;
+    document.getElementById("description").innerText = DATA.description;
+
+    const badge = document.getElementById("statusBadge");
+    badge.className = "status-badge status-" + DATA.status;
+    badge.innerText = DATA.status.toUpperCase();
+
+    document.getElementById("reopenBtn").style.display = DATA.status === "resolved" ? "inline-flex" : "none";
+    if (DATA.resolution) {
+        document.getElementById("resolutionBox").style.display = "block";
+        document.getElementById("resCategory").innerText = DATA.resolution.category;
+        document.getElementById("resTime").innerText = DATA.resolution.timeSpent + " hours";
+        document.getElementById("resBy").innerText = DATA.resolution.resolvedBy;
+        document.getElementById("resAt").innerText = DATA.resolution.resolvedAt;
+        document.getElementById("resDetails").innerText = DATA.resolution.details;
+    }
+
+    const time = document.getElementById("timeline");
+    time.innerHTML = "";
+    DATA.timeline.forEach(e => {
+        time.innerHTML += `<div class='timeline-item'><b>${e.date}</b> — ${e.action} (By: ${e.by})</div>`;
+    });
+}
+function markInProgress(){
+    complaintDB.updateComplaint(CID,{status:"in-progress"});
+    complaintDB.addTimelineEvent(CID,{action:"Marked In Progress",by:"Admin"});
+    load();
+}
+function reopen(){
+    complaintDB.updateComplaint(CID,{status:"pending",resolution:null});
+    complaintDB.addTimelineEvent(CID,{action:"Reopened",by:"Admin"});
+    load();
+}
+function openResolve(){
+    const txt=prompt("Enter resolution details:");
+    if(!txt)return;
+    const resolution={
+      details:txt,category:"Issue Fixed",timeSpent:1,resolvedBy:"Admin",resolvedAt:new Date().toLocaleString()
+    };
+    complaintDB.updateComplaint(CID,{status:"resolved",resolution});
+    complaintDB.addTimelineEvent(CID,{action:"Resolved",by:"Admin"});
+    load();
+}
+
+// PDF VIEW
+function viewPDF(){
+    generatePDF(true);
+}
+
+// PDF DOWNLOAD
+function downloadPDF(type){
+    generatePDF(false,type);
+}
+
+// Generate PDF Core
+function generatePDF(preview,type="detailed"){
+    const doc=new jsPDF();
+    doc.text("Complaint Report",20,15);
+    doc.text(`Complaint ID: ${DATA.complaintId}`,20,25);
+    doc.text(`Status: ${DATA.status}`,20,35);
+    doc.text(`Student: ${DATA.studentName}`,20,45);
+    doc.text(`Description: ${DATA.description}`,20,55);
+    if(type==="detailed"&&DATA.resolution){
+      doc.text(`Resolution: ${DATA.resolution.details}`,20,70);
+    }
+    const pdfFile=preview?doc.output("bloburl"):
+                         doc.save(`Report_${DATA.complaintId}.pdf`);
+    if(preview)window.open(pdfFile,"_blank");
+}
+
+// JSON file
+function downloadJSON(){
+    const blob=new Blob([JSON.stringify(DATA,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;a.download=`report_${CID}.json`;a.click();
+}
+load();
+</script>
+</body>
+</html>

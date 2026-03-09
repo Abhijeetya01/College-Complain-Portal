@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Role - College Complaint Portal</title>
+    <link rel="stylesheet" href="splash.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="role-select-container">
+        <div class="role-header">
+            <a href="home.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1>Who are you?</h1>
+            <p>Select your role to continue</p>
+        </div>
+        
+        <div class="role-cards">
+            <div class="role-card student-card" onclick="selectRole('student')">
+                <div class="role-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <h3>Student</h3>
+                <p>Submit complaints, track status, and get issues resolved</p>
+                <ul class="role-features">
+                    <li><i class="fas fa-check"></i> Submit complaints</li>
+                    <li><i class="fas fa-check"></i> Track complaint status</li>
+                    <li><i class="fas fa-check"></i> Upload evidence</li>
+                    <li><i class="fas fa-check"></i> Anonymous complaints</li>
+                </ul>
+                <button class="role-select-btn">
+                    Continue as Student <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            
+            <div class="role-card admin-card" onclick="selectRole('admin')">
+                <div class="role-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3>Administrator</h3>
+                <p>Manage complaints, resolve issues, and monitor system</p>
+                <ul class="role-features">
+                    <li><i class="fas fa-check"></i> View all complaints</li>
+                    <li><i class="fas fa-check"></i> Update complaint status</li>
+                    <li><i class="fas fa-check"></i> Manage departments</li>
+                    <li><i class="fas fa-check"></i> Analytics & reports</li>
+                </ul>
+                <button class="role-select-btn">
+                    Continue as Admin <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectRole(role) {
+            if (role === 'student') {
+                window.location.href = 'login.html';
+            } else if (role === 'admin') {
+                window.location.href = 'admin-login.html';
+            }
+        }
+    </script>
+</body>
+</html>

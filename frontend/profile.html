@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Student Portal</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Student Portal</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="student-dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="complaint-form.html?type=normal" class="nav-item">
+                <i class="fas fa-edit"></i>
+                <span>Submit Complaint</span>
+            </a>
+            <a href="complaint-form.html?type=anonymous" class="nav-item">
+                <i class="fas fa-user-secret"></i>
+                <span>Anonymous Complaint</span>
+            </a>
+            <a href="track-complaint.html" class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Track Complaint</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user"></i>
+                <span>My Profile</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <h1>My Profile</h1>
+                <p>Manage your account information and preferences</p>
+            </div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <img id="userAvatar" src="avatar.png" alt="Profile">
+                    <span id="userName">Student Name</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="profile-container">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img id="profileAvatar" src="avatar.png" alt="Profile Picture">
+                        <button class="change-avatar-btn" onclick="changeAvatar()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="profileName">Loading...</h2>
+                        <p id="profileStudentId" class="student-id">Student ID: Loading...</p>
+                        <p id="profileDepartment" class="department">Department: Loading...</p>
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <span id="totalComplaintsProfile" class="stat-number">0</span>
+                                <small class="stat-label">Total Complaints</small>
+                            </div>
+                            <div class="stat">
+                                <span id="resolvedComplaintsProfile" class="stat-number">0</span>
+                                <small class="stat-label">Resolved</small>
+                            </div>
+                            <div class="stat">
+                                <span id="pendingComplaintsProfile" class="stat-number">0</span>
+                                <small class="stat-label">Pending</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-user-circle"></i> Personal Information</h3>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label><i class="fas fa-user"></i> Full Name</label>
+                            <span id="detailName">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-id-card"></i> Student ID</label>
+                            <span id="detailStudentId">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-envelope"></i> Email Address</label>
+                            <span id="detailEmail">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-building"></i> Department</label>
+                            <span id="detailDepartment">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-phone"></i> Phone Number</label>
+                            <span id="detailPhone">Not provided</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-calendar"></i> Member Since</label>
+                            <span id="detailMemberSince">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Actions -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-cog"></i> Account Management</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="editProfile()">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-secondary" onclick="changePassword()">
+                            <i class="fas fa-lock"></i> Change Password
+                        </button>
+                        <button class="btn btn-outline" onclick="downloadData()">
+                            <i class="fas fa-download"></i> Download My Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity & Statistics -->
+            <div class="profile-sidebar">
+                <!-- Quick Stats -->
+                <div class="stats-card">
+                    <h3><i class="fas fa-chart-bar"></i> Complaint Statistics</h3>
+                    <div class="stats-chart">
+                        <div class="chart-item">
+                            <div class="chart-label">
+                                <span class="status-dot resolved"></span>
+                                Resolved
+                            </div>
+                            <div class="chart-bar">
+                                <div class="chart-fill resolved" id="resolvedBar"></div>
+                            </div>
+                            <span class="chart-value" id="resolvedPercent">0%</span>
+                        </div>
+                        <div class="chart-item">
+                            <div class="chart-label">
+                                <span class="status-dot pending"></span>
+                                Pending
+                            </div>
+                            <div class="chart-bar">
+                                <div class="chart-fill pending" id="pendingBar"></div>
+                            </div>
+                            <span class="chart-value" id="pendingPercent">0%</span>
+                        </div>
+                        <div class="chart-item">
+                            <div class="chart-label">
+                                <span class="status-dot in-progress"></span>
+                                In Progress
+                            </div>
+                            <div class="chart-bar">
+                                <div class="chart-fill in-progress" id="progressPercent"></div>
+                            </div>
+                            <span class="chart-value" id="progressPercentText">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="activity-card">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    <div id="recentActivity" class="activity-list">
+                        <div class="loading">Loading activity...</div>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="links-card">
+                    <h3><i class="fas fa-link"></i> Quick Links</h3>
+                    <div class="quick-links">
+                        <a href="complaint-form.html?type=normal" class="quick-link">
+                            <i class="fas fa-edit"></i>
+                            <span>Submit New Complaint</span>
+                        </a>
+                        <a href="track-complaint.html" class="quick-link">
+                            <i class="fas fa-search"></i>
+                            <span>Track Complaint</span>
+                        </a>
+                        <a href="dashboard.html" class="quick-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#" class="quick-link" onclick="contactSupport()">
+                            <i class="fas fa-headset"></i>
+                            <span>Contact Support</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button class="modal-close" onclick="closeModal('editProfileModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="editName">Full Name</label>
+                        <input type="text" id="editName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">Phone Number</label>
+                        <input type="tel" id="editPhone" name="phone" placeholder="Enter phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="editDepartment">Department</label>
+                        <select id="editDepartment" name="department" required>
+                            <option value="">Select Department</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Civil">Civil</option>
+                            <option value="MBA">MBA</option>
+                            <option value="MCA">MCA</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editProfileModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Change Password</h3>
+                <button class="modal-close" onclick="closeModal('changePasswordModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" required minlength="6">
+                        <small>Minimum 6 characters</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="updatePassword()">Update Password</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="profile.js"></script>
+    <script>
+        function logout() {
+            localStorage.removeItem('studentToken');
+            localStorage.removeItem('studentData');
+            window.location.href = 'role-select.html';
+        }
+        
+        function contactSupport() {
+            alert('Please email: support@college.edu\nOr call: +91-XXX-XXXX-XXX');
+        }
+    </script>
+</body>
+</html>

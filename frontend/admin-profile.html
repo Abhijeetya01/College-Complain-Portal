@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile - College Complaint Portal</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin Portal</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="admin.html" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="all-complaint.html" class="nav-item">
+                <i class="fas fa-inbox"></i>
+                <span>All Complaints</span>
+            </a>
+            <a href="pendding.html" class="nav-item">
+                <i class="fas fa-clock"></i>
+                <span>Pending</span>
+            </a>
+             
+            <a href="resolved.html" class="nav-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Resolved</span>
+            </a>
+        
+            </a>
+            <a href="reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-profile.html" class="nav-item active">
+                <i class="fas fa-user-cog"></i>
+                <span>Admin Profile</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="adminLogout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <h1>Admin Profile</h1>
+                <p>Manage your administrator account and settings</p>
+            </div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <img id="adminProfileAvatar" src="../assets/images/admin-avatar.png" alt="Admin">
+                    <span id="adminProfileName">Admin Name</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="profile-container">
+            <!-- Admin Profile Card -->
+            <div class="profile-card admin-profile">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <img id="adminAvatarLarge" src="../assets/images/admin-avatar.png" alt="Admin Profile">
+                        <button class="change-avatar-btn" onclick="changeAdminAvatar()">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="adminProfileName">Loading...</h2>
+                        <p id="adminProfileUsername" class="username">@username</p>
+                        <p id="adminProfileRole" class="role">System Administrator</p>
+                        <p id="adminProfileDepartment" class="department">All Departments</p>
+                        
+                        <div class="admin-stats">
+                            <div class="admin-stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-inbox"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span id="adminTotalHandled">0</span>
+                                    <small>Total Handled</small>
+                                </div>
+                            </div>
+                            <div class="admin-stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span id="adminResolved">0</span>
+                                    <small>Resolved</small>
+                                </div>
+                            </div>
+                            <div class="admin-stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span id="adminPending">0</span>
+                                    <small>Pending</small>
+                                </div>
+                            </div>
+                            <div class="admin-stat">
+                                <div class="stat-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <span id="adminEfficiency">0%</span>
+                                    <small>Efficiency</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Information -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-info-circle"></i> Administrator Information</h3>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label><i class="fas fa-user"></i> Full Name</label>
+                            <span id="adminDetailName">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-at"></i> Username</label>
+                            <span id="adminDetailUsername">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-envelope"></i> Email</label>
+                            <span id="adminDetailEmail">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-building"></i> Department</label>
+                            <span id="adminDetailDepartment">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-user-tag"></i> Role</label>
+                            <span id="adminDetailRole" class="role-badge">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-calendar"></i> Member Since</label>
+                            <span id="adminDetailJoinDate">Loading...</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-phone"></i> Contact</label>
+                            <span id="adminDetailContact">Not provided</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><i class="fas fa-shield-alt"></i> Permissions</label>
+                            <span id="adminDetailPermissions">Full Access</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Actions -->
+                <div class="profile-section">
+                    <h3><i class="fas fa-cog"></i> Account Management</h3>
+                    <div class="action-buttons admin-actions">
+                        <button class="btn btn-primary" onclick="editAdminProfile()">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                        <button class="btn btn-secondary" onclick="changeAdminPassword()">
+                            <i class="fas fa-lock"></i> Change Password
+                        </button>
+                        <button class="btn btn-outline" onclick="managePermissions()">
+                            <i class="fas fa-user-shield"></i> Permissions
+                        </button>
+                        <button class="btn btn-outline" onclick="backupData()">
+                            <i class="fas fa-database"></i> Backup Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Sidebar -->
+            <div class="profile-sidebar">
+                <!-- Performance Metrics -->
+                <div class="stats-card admin-performance">
+                    <h3><i class="fas fa-chart-line"></i> Performance</h3>
+                    <div class="performance-metrics">
+                        <div class="metric">
+                            <div class="metric-value" id="performanceScore">0%</div>
+                            <div class="metric-label">Performance Score</div>
+                            <div class="metric-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="performanceFill"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="responseScore">0h</div>
+                            <div class="metric-label">Avg. Response Time</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value" id="resolutionScore">0h</div>
+                            <div class="metric-label">Avg. Resolution Time</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="activity-card admin-activity">
+                    <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                    <div id="adminRecentActivity" class="activity-list">
+                        <div class="loading">Loading activity...</div>
+                    </div>
+                </div>
+
+                <!-- System Info -->
+                <div class="system-card">
+                    <h3><i class="fas fa-info-circle"></i> System Information</h3>
+                    <div class="system-info">
+                        <div class="info-item">
+                            <label>Last Login</label>
+                            <span id="lastLogin">Never</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Account Status</label>
+                            <span class="status-active">Active</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Login Count</label>
+                            <span id="loginCount">0</span>
+                        </div>
+                        <div class="info-item">
+                            <label>System Role</label>
+                            <span id="systemRole">Administrator</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Admin Profile Modal -->
+    <div id="editAdminModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Admin Profile</h3>
+                <button class="modal-close" onclick="closeModal('editAdminModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editAdminForm" class="modal-form">
+                    <div class="form-group">
+                        <label for="editAdminName">Full Name</label>
+                        <input type="text" id="editAdminName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAdminEmail">Email Address</label>
+                        <input type="email" id="editAdminEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAdminContact">Contact Number</label>
+                        <input type="tel" id="editAdminContact" name="contact" placeholder="Enter contact number">
+                    </div>
+                    <div class="form-group">
+                        <label for="editAdminDepartment">Department</label>
+                        <select id="editAdminDepartment" name="department" required>
+                            <option value="All">All Departments</option>
+                            <option value="Hostel">Hostel</option>
+                            <option value="Academics">Academics</option>
+                            <option value="Library">Library</option>
+                            <option value="IT">IT</option>
+                            <option value="Sports">Sports</option>
+                            <option value="Mess">Mess</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('editAdminModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="saveAdminProfile()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="admni1-profile.js"></script>
+    <script>
+        function adminLogout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminData');
+            window.location.href = 'admin-login.html';
+        }
+    </script>
+</body>
+</html>

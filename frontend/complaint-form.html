@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Complaint - Student Portal</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar (Same as dashboard) -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Student Portal</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="student-dashboard.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="complaint-form.html?type=normal" class="nav-item active">
+                <i class="fas fa-edit"></i>
+                <span>Submit Complaint</span>
+            </a>
+            <a href="complaint-form.html?type=anonymous" class="nav-item">
+                <i class="fas fa-user-secret"></i>
+                <span>Anonymous Complaint</span>
+            </a>
+            <a href="track-complaint.html" class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Track Complaint</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>My Profile</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="logout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <h1 id="complaintTitle">Submit Complaint</h1>
+                <p id="complaintSubtitle">Report your issue with relevant details</p>
+            </div>
+            <div class="header-right">
+                <div class="user-profile">
+                    <img id="userAvatar" src="../assets/images/avatar.png" alt="Profile">
+                    <span id="userName">Student Name</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Complaint Type Indicator -->
+        <div class="complaint-type-indicator">
+            <div class="type-tab" id="normalTab">
+                <i class="fas fa-user"></i>
+                <span>Normal Complaint</span>
+            </div>
+            <div class="type-tab" id="anonymousTab">
+                <i class="fas fa-user-secret"></i>
+                <span>Anonymous Complaint</span>
+            </div>
+        </div>
+
+        <!-- Complaint Form -->
+        <div class="complaint-form-container">
+            <form id="complaintForm" class="complaint-form" enctype="multipart/form-data">
+                <div class="form-section">
+                    <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                    
+                    <div id="studentInfo" class="student-info-card">
+                        <div class="info-row">
+                            <div class="info-item">
+                                <label>Name:</label>
+                                <span id="displayName">Loading...</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Student ID:</label>
+                                <span id="displayStudentId">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-item">
+                                <label>Department:</label>
+                                <span id="displayDepartment">Loading...</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Email:</label>
+                                <span id="displayEmail">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">
+                                <i class="fas fa-tags"></i> Complaint Category *
+                            </label>
+                            <select id="category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Hostel">Hostel & Accommodation</option>
+                                <option value="Academics">Academics & Studies</option>
+                                <option value="Library">Library Services</option>
+                                <option value="IT">IT & Computer Lab</option>
+                                <option value="Sports">Sports & Recreation</option>
+                                <option value="Mess">Mess & Food Services</option>
+                                <option value="Transport">Transport & Parking</option>
+                                <option value="Finance">Fees & Finance</option>
+                                <option value="Other">Other Issues</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="priority">
+                                <i class="fas fa-exclamation-circle"></i> Priority Level *
+                            </label>
+                            <select id="priority" name="priority" required>
+                                <option value="Low">Low Priority</option>
+                                <option value="Medium" selected>Medium Priority</option>
+                                <option value="High">High Priority</option>
+                                <option value="Urgent">Urgent - Immediate Attention</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-comment-dots"></i> Complaint Details</h3>
+                    <div class="form-group">
+                        <label for="complaintTitle">
+                            <i class="fas fa-heading"></i> Complaint Title *
+                        </label>
+                        <input type="text" id="complaintTitleInput" name="complaintTitle" 
+                               placeholder="Brief title of your complaint" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaintText">
+                            <i class="fas fa-align-left"></i> Detailed Description *
+                        </label>
+                        <textarea id="complaintText" name="complaintText" rows="6" 
+                                  placeholder="Please describe your complaint in detail. Include specific dates, locations, and people involved if applicable." required></textarea>
+                        <div class="char-count">
+                            <span id="charCount">0</span>/1000 characters
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><i class="fas fa-camera"></i> Evidence & Media</h3>
+                    <div class="form-group">
+                        <label>Attach Supporting Files</label>
+                        <div class="file-upload-area" id="fileUploadArea">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to upload or drag and drop</p>
+                            <span>Supports images (JPG, PNG) and videos (MP4) - Max 50MB total</span>
+                            <input type="file" id="mediaFiles" name="mediaFiles" multiple 
+                                   accept="image/*,video/*" style="display: none;">
+                        </div>
+                        <div id="filePreview" class="file-preview"></div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="location.href='student-dashboard.html'">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Submit Complaint
+                    </button>
+                </div>
+            </form>
+
+            <div id="formMessage" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get complaint type from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const complaintType = urlParams.get('type') || 'normal';
+        
+        // Set initial state
+        document.addEventListener('DOMContentLoaded', function() {
+            setComplaintType(complaintType);
+        });
+
+        function setComplaintType(type) {
+            const normalTab = document.getElementById('normalTab');
+            const anonymousTab = document.getElementById('anonymousTab');
+            const studentInfo = document.getElementById('studentInfo');
+            const complaintTitle = document.getElementById('complaintTitle');
+            const complaintSubtitle = document.getElementById('complaintSubtitle');
+
+            if (type === 'anonymous') {
+                normalTab.classList.remove('active');
+                anonymousTab.classList.add('active');
+                studentInfo.style.display = 'none';
+                complaintTitle.textContent = 'Submit Anonymous Complaint';
+                complaintSubtitle.textContent = 'Report issue without revealing your identity';
+            } else {
+                normalTab.classList.add('active');
+                anonymousTab.classList.remove('active');
+                studentInfo.style.display = 'block';
+                complaintTitle.textContent = 'Submit Complaint';
+                complaintSubtitle.textContent = 'Report your issue with relevant details';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('studentToken');
+            localStorage.removeItem('studentData');
+            window.location.href = 'index.html';
+        }
+    </script>
+    <script src="student-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resolved Complaints - Admin Portal</title>
+<link rel="stylesheet" href="dashboard.css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<style>
+/* ——————— (same CSS as your file, no change — full responsive & styled) ———————*/
+.resolved-container{padding:2rem;max-width:1400px;margin:0 auto;}
+.resolved-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;padding-bottom:1rem;border-bottom:2px solid #e9ecef;}
+.header-actions{display:flex;gap:1rem;align-items:center;}
+.success-badge{background:#28a745;color:#fff;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600;}
+.complaints-grid{display:grid;gap:1.5rem;margin-top:2rem;}
+.complaint-card{background:white;border-radius:10px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,0.1);border-left:4px solid #28a745;}
+.complaint-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;}
+.complaint-title h3{margin:0 0 0.5rem;color:#2c3e50;font-size:1.1rem;}
+.complaint-meta{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem;}
+.meta-badge{padding:4px 8px;font-size:.75rem;font-weight:600;border-radius:12px;}
+.department-badge{background:#e9ecef;}
+.status-resolved{background:#d4edda;color:#155724;}
+.resolution-section{background:#f8f9fa;padding:1rem;border-left:3px solid #28a745;border-radius:8px;margin:1rem 0;}
+.complaint-actions{display:flex;justify-content:flex-end;gap:.75rem;border-top:1px solid #e9ecef;padding-top:1rem;}
+.btn{padding:8px 14px;border:0;border-radius:5px;cursor:pointer;font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:6px;}
+.btn-warning{background:#ffc107;color:#212529;}
+.btn-primary{background:#007bff;color:white;}
+.loading{text-align:center;padding:3rem;color:#6c757d;}
+.no-data{text-align:center;padding:3rem;color:#6c757d;background:white;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+.notification{position:fixed;top:20px;right:20px;background:#28a745;color:white;padding:13px 18px;border-radius:6px;transform:translateX(350px);transition:0.3s;font-weight:600;}
+.notification.show{transform:translateX(0);}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo"><i class="fas fa-user-shield"></i><span>Admin Portal</span></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="admin.html" class="nav-item"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+        <a href="in-progress.html" class="nav-item">
+                <i class="fas fa-clock"></i>
+                <span>in-progress</span>
+            </a><a href="all-complaint.html" class="nav-item"><i class="fas fa-inbox"></i><span>All Complaints</span></a>
+        <a href="pending.html" class="nav-item"><i class="fas fa-clock"></i><span>Pending Complaints</span></a>
+        <a href="resolved.html" class="nav-item active"><i class="fas fa-check-circle"></i><span>Resolved Complaints</span><span class="nav-badge" id="resolvedBadge">0</span></a>
+        <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar"></i><span>Reports</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <button onclick="logout()" class="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></button>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+<header class="top-header">
+    <div>
+        <h1>Resolved Complaints</h1>
+        <p>All student complaints resolved successfully</p>
+    </div>
+</header>
+
+<div class="resolved-container">
+    <div class="resolved-header">
+        <div>
+            <h2>Completed Complaints</h2>
+            <p id="resolvedSubtitle">Fetching resolved complaints...</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="loadResolved()"><i class="fas fa-sync-alt"></i> Refresh</button>
+            <span class="success-badge" id="totalResolvedText"><i class="fas fa-trophy"></i> 0 Resolved</span>
+        </div>
+    </div>
+
+    <div id="complaintsGrid" class="complaints-grid">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>
+    </div>
+
+    <div id="noData" class="no-data" style="display:none;">
+        <i class="fas fa-check-circle fa-3x" style="color:#28a745;margin-bottom:1rem;"></i>
+        <h3>No Resolved Complaints</h3>
+        <p>Looks like nothing resolved yet.</p>
+    </div>
+</div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<script>
+const API = "http://localhost:5000/api/admin/complaints";
+function token(){ return localStorage.getItem("adminToken"); }
+
+async function fetchAPI(path, method="GET", body=null){
+    const res = await fetch(API+path, {
+        method,
+        headers:{ "Content-Type":"application/json", "Authorization":"Bearer "+token() },
+        body: body ? JSON.stringify(body) : null
+    });
+    return await res.json();
+}
+
+function notify(msg,type="success"){
+    const n=document.getElementById("notification");
+    n.textContent=msg;
+    n.style.background = type=="error" ? "#dc3545" : "#28a745";
+    n.classList.add("show");
+    setTimeout(()=>n.classList.remove("show"),2500);
+}
+
+let dataResolved = [];
+
+async function loadResolved(){
+    document.getElementById("complaintsGrid").innerHTML =
+        `<div class='loading'><i class='fas fa-spinner fa-spin'></i><p>Loading...</p></div>`;
+    try{
+        const res = await fetchAPI("");
+        dataResolved = (res.data || []).filter(c => c.status === "Resolved");
+        display();
+    }catch{
+        notify("Failed to load data","error");
+    }
+}
+
+function display(){
+    const grid = document.getElementById("complaintsGrid");
+    if(dataResolved.length === 0){
+        grid.innerHTML = "";
+        document.getElementById("noData").style.display="block";
+        return;
+    }
+    document.getElementById("noData").style.display="none";
+    document.getElementById("resolvedBadge").textContent = dataResolved.length;
+    document.getElementById("totalResolvedText").innerHTML =
+        `<i class="fas fa-trophy"></i> ${dataResolved.length} Resolved`;
+    grid.innerHTML = dataResolved.map(c => `
+        <div class="complaint-card">
+            <div class="complaint-header">
+                <div class="complaint-title">
+                    <h3>${c.title}</h3>
+                    <div class="complaint-meta">
+                        <span class="meta-badge status-resolved"><i class="fas fa-check"></i> Resolved</span>
+                        <span class="meta-badge department-badge">${c.department}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="complaint-body">
+                <p>${c.description}</p>
+                <div class="resolution-section">
+                    <b>Resolution</b><br>
+                    ${c.resolutionNotes || "No notes"}
+                </div>
+            </div>
+            <div class="complaint-actions">
+                <button class="btn btn-warning" onclick="reopen('${c._id}')"><i class="fas fa-redo"></i> Re-open</button>
+            </div>
+        </div>
+    `).join("");
+}
+
+async function reopen(id){
+    try{
+        await fetchAPI(`/${id}/status`, "PUT", { status:"Pending", message:"Reopened from Resolved" });
+        notify("Complaint reopened");
+        loadResolved();
+    }catch{
+        notify("Failed","error");
+    }
+}
+
+function logout(){
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("adminInfo");
+    window.location.href="admin-login.html";
+}
+
+document.addEventListener("DOMContentLoaded", loadResolved);
+</script>
+</body>
+</html>

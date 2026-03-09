@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Complaints - Admin Portal</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .pending-container {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .pending-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .urgent-badge {
+            background: #dc3545;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: end;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .filter-group label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .search-box input {
+            flex: 1;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #007bff;
+        }
+        
+        .stat-card.urgent { border-left-color: #dc3545; }
+        .stat-card.high-priority { border-left-color: #fd7e14; }
+        .stat-card.overdue { border-left-color: #6f42c1; }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .complaints-grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .complaint-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid #ffc107;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .complaint-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .complaint-card.urgent {
+            border-left-color: #dc3545;
+            background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+        }
+        
+        .complaint-card.overdue {
+            border-left-color: #6f42c1;
+            background: linear-gradient(135deg, #fff 0%, #f8f9ff 100%);
+        }
+        
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .complaint-title {
+            flex: 1;
+            margin-right: 1rem;
+        }
+        
+        .complaint-title h3 {
+            margin: 0 0 0.5rem 0;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            line-height: 1.4;
+        }
+        
+        .complaint-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .meta-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .priority-high {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .priority-medium {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .priority-low {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .department-badge {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .urgent-tag {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .overdue-tag {
+            background: #6f42c1;
+            color: white;
+        }
+        
+        .complaint-body {
+            margin-bottom: 1.5rem;
+        }
+        
+        .complaint-description {
+            color: #495057;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .complaint-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 0.8rem;
+        }
+        
+        .detail-value {
+            color: #212529;
+            font-weight: 500;
+        }
+        
+        .complaint-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            border-top: 1px solid #e9ecef;
+            padding-top: 1rem;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 500;
+            z-index: 3000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #28a745;
+        }
+        
+        .notification.error {
+            background: #dc3545;
+        }
+        
+        @media (max-width: 768px) {
+            .complaint-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .complaint-actions {
+                justify-content: stretch;
+                flex-wrap: wrap;
+            }
+            
+            .complaint-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin Portal</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="admin.html" class="nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="all-complaint.html" class="nav-item">
+                <i class="fas fa-inbox"></i>
+                <span>All Complaints</span>
+            </a>
+            <a href="in-progress.html" class="nav-item">
+                <i class="fas fa-clock"></i>
+                <span>in-progress</span>
+            </a>
+            <a href="pending.html" class="nav-item active">
+                <i class="fas fa-clock"></i>
+                <span>Pending Complaints</span>
+                <span class="nav-badge" id="pendingBadge">0</span>
+            </a>
+            <a href="resolved.html" class="nav-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Resolved Complaints</span>
+            </a>
+            <a href="reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="adminLogout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <h1>Pending Complaints</h1>
+                <p>Review and manage all pending student complaints requiring attention</p>
+            </div>
+        </header>
+
+        <div class="pending-container">
+            <!-- Header Actions -->
+            <div class="pending-header">
+                <div>
+                    <h2>Awaiting Resolution</h2>
+                    <p id="pendingSubtitle">Complaints that need immediate attention</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="refreshComplaints()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <span class="urgent-badge" id="urgentCount">
+                        <i class="fas fa-exclamation-circle"></i> 0 Urgent
+                    </span>
+                </div>
+            </div>
+
+            <!-- Statistics Overview -->
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPending">0</div>
+                    <div class="stat-label">Total Pending</div>
+                </div>
+                <div class="stat-card urgent">
+                    <div class="stat-value" id="urgentPending">0</div>
+                    <div class="stat-label">High Priority</div>
+                </div>
+                <div class="stat-card high-priority">
+                    <div class="stat-value" id="highPending">0</div>
+                    <div class="stat-label">High + Medium</div>
+                </div>
+                <div class="stat-card overdue">
+                    <div class="stat-value" id="overduePending">0</div>
+                    <div class="stat-label">Overdue (&gt; 3 days)</div>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label for="search">Search Pending Complaints</label>
+                        <div class="search-box">
+                            <input type="text" id="search" placeholder="Search by ID, title, or description...">
+                            <button class="btn btn-primary" onclick="searchComplaints()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label for="priorityFilter">Priority</label>
+                        <select id="priorityFilter" onchange="filterComplaints()">
+                            <option value="all">All Priorities</option>
+                            <option value="High">High Priority</option>
+                            <option value="Medium">Medium Priority</option>
+                            <option value="Low">Low Priority</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="departmentFilter">Department</label>
+                        <select id="departmentFilter" onchange="filterComplaints()">
+                            <option value="all">All Departments</option>
+                            <option value="Hostel">Hostel</option>
+                            <option value="Academic">Academic</option>
+                            <option value="Library">Library</option>
+                            <option value="Infrastructure">Infrastructure</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="sortBy">Sort By</label>
+                        <select id="sortBy" onchange="sortComplaints()">
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="priority">Priority Level</option>
+                            <option value="urgent">Urgent First</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complaints Grid -->
+            <div id="complaintsGrid" class="complaints-grid">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading pending complaints...</p>
+                </div>
+            </div>
+
+            <!-- No Data Message -->
+            <div id="noData" class="no-data" style="display: none;">
+                <i class="fas fa-check-circle fa-3x" style="color: #28a745; margin-bottom: 1rem;"></i>
+                <h3>No Pending Complaints</h3>
+                <p>All complaints have been addressed. Great work!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        const API_BASE = "http://localhost:5000";
+        let allPending = [];
+        let filteredPending = [];
+
+        function adminLogout() {
+            localStorage.removeItem("adminToken");
+            localStorage.removeItem("adminInfo");
+            window.location.href = "admin-login.html";
+        }
+
+        function getToken() {
+            return localStorage.getItem("adminToken");
+        }
+
+        async function fetchWithAuth(path, options = {}) {
+            const token = getToken();
+            if (!token) {
+                alert("Session expired. Please login again.");
+                window.location.href = "admin-login.html";
+                return;
+            }
+            const headers = options.headers || {};
+            headers["Authorization"] = "Bearer " + token;
+            if (options.body && !headers["Content-Type"]) {
+                headers["Content-Type"] = "application/json";
+            }
+            const res = await fetch(API_BASE + path, { ...options, headers });
+            if (!res.ok) throw new Error("API error " + res.status);
+            return res.json();
+        }
+
+        function showNotification(message, type = "success") {
+            const n = document.getElementById("notification");
+            n.textContent = message;
+            n.className = "notification " + type + " show";
+            setTimeout(() => { n.classList.remove("show"); }, 2500);
+        }
+
+        function showLoading() {
+            document.getElementById("complaintsGrid").innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading pending complaints...</p>
+                </div>
+            `;
+        }
+
+        function showNoData() {
+            document.getElementById("noData").style.display = "block";
+        }
+
+        function hideNoData() {
+            document.getElementById("noData").style.display = "none";
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return "-";
+            return new Date(dateStr).toLocaleString();
+        }
+
+        function isOverdue(complaint) {
+            if (!complaint.createdAt) return false;
+            const created = new Date(complaint.createdAt);
+            const diffDays = (Date.now() - created.getTime()) / (1000 * 60 * 60 * 24);
+            return diffDays > 3;
+        }
+
+        function updateStats(list) {
+            const total = list.length;
+            const urgent = list.filter(c => c.priority === "High").length;
+            const high = list.filter(c => c.priority === "High" || c.priority === "Medium").length;
+            const overdue = list.filter(c => isOverdue(c)).length;
+
+            document.getElementById("totalPending").textContent = total;
+            document.getElementById("urgentPending").textContent = urgent;
+            document.getElementById("highPending").textContent = high;
+            document.getElementById("overduePending").textContent = overdue;
+            document.getElementById("urgentCount").innerHTML =
+                `<i class="fas fa-exclamation-circle"></i> ${urgent} Urgent`;
+
+            document.getElementById("pendingBadge").textContent = total;
+
+            const subtitle = document.getElementById("pendingSubtitle");
+            if (total === 0) subtitle.textContent = "All complaints have been addressed";
+            else if (urgent > 0) subtitle.textContent = `${urgent} urgent complaints require immediate attention`;
+            else subtitle.textContent = `${total} complaints awaiting resolution`;
+        }
+
+        function mapComplaint(raw) {
+            return {
+                id: raw._id,
+                trackingId: raw.trackingId || raw._id,
+                title: raw.complaintTitle || raw.title || "Untitled Complaint",
+                description: raw.complaintText || raw.description || "",
+                priority: raw.priority || "Low",
+                status: raw.status || "Pending",
+                department: raw.department || raw.category || "General",
+                studentEmail: raw.studentEmail || "-",
+                createdAt: raw.createdAt
+            };
+        }
+
+        function renderComplaints(list) {
+            const grid = document.getElementById("complaintsGrid");
+            if (!list.length) {
+                grid.innerHTML = "";
+                showNoData();
+                return;
+            }
+            hideNoData();
+
+            const html = list.map(c => {
+                const urgent = c.priority === "High";
+                const overdue = isOverdue(c);
+
+                return `
+                <div class="complaint-card ${urgent ? "urgent" : ""} ${overdue ? "overdue" : ""}">
+                    <div class="complaint-header">
+                        <div class="complaint-title">
+                            <h3>${c.title}</h3>
+                            <div class="complaint-meta">
+                                <span class="meta-badge priority-${c.priority.toLowerCase()}">
+                                    ${c.priority} Priority
+                                </span>
+                                <span class="meta-badge department-badge">
+                                    ${c.department}
+                                </span>
+                                ${urgent ? `
+                                    <span class="meta-badge urgent-tag">
+                                        <i class="fas fa-exclamation-circle"></i> Urgent
+                                    </span>` : ""}
+                                ${overdue ? `
+                                    <span class="meta-badge overdue-tag">
+                                        <i class="fas fa-clock"></i> Overdue
+                                    </span>` : ""}
+                            </div>
+                        </div>
+                        <div class="complaint-actions">
+                            <button class="btn btn-success btn-sm" onclick="markInProgress('${c.id}')">
+                                <i class="fas fa-spinner"></i> In Progress
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="resolveComplaint('${c.id}')">
+                                <i class="fas fa-check"></i> Resolve
+                            </button>
+                        </div>
+                    </div>
+                    <div class="complaint-body">
+                        <div class="complaint-description">
+                            ${c.description || "No description provided."}
+                        </div>
+                        <div class="complaint-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Complaint ID</span>
+                                <span class="detail-value">${c.trackingId}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Submitted</span>
+                                <span class="detail-value">${formatDate(c.createdAt)}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Student</span>
+                                <span class="detail-value">${c.studentEmail}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Age</span>
+                                <span class="detail-value">${getComplaintAge(c)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }).join("");
+
+            grid.innerHTML = html;
+        }
+
+        function getComplaintAge(c) {
+            if (!c.createdAt) return "-";
+            const created = new Date(c.createdAt);
+            const diffMs = Date.now() - created.getTime();
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            if (diffDays <= 0) return "Today";
+            if (diffDays === 1) return "1 day ago";
+            return diffDays + " days ago";
+        }
+
+        async function loadPendingComplaints() {
+            try {
+                showLoading();
+                const res = await fetchWithAuth("/api/admin/complaints");
+                const all = res.data || [];
+                const pendingOnly = all
+                    .map(mapComplaint)
+                    .filter(c => c.status === "Pending");
+
+                allPending = pendingOnly;
+                filteredPending = [...allPending];
+
+                applyFilters(); // initial apply
+            } catch (err) {
+                console.error(err);
+                showNotification("Failed to load pending complaints", "error");
+                document.getElementById("complaintsGrid").innerHTML = "";
+                showNoData();
+            }
+        }
+
+        function applyFilters() {
+            let list = [...allPending];
+
+            const priority = document.getElementById("priorityFilter").value;
+            const dept = document.getElementById("departmentFilter").value;
+            const search = document.getElementById("search").value.trim().toLowerCase();
+            const sortBy = document.getElementById("sortBy").value;
+
+            if (priority !== "all") {
+                list = list.filter(c => c.priority === priority);
+            }
+
+            if (dept !== "all") {
+                list = list.filter(c => c.department === dept);
+            }
+
+            if (search) {
+                list = list.filter(c => 
+                    c.trackingId.toLowerCase().includes(search) ||
+                    c.title.toLowerCase().includes(search) ||
+                    (c.description || "").toLowerCase().includes(search)
+                );
+            }
+
+            // sort
+            if (sortBy === "newest") {
+                list.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            } else if (sortBy === "oldest") {
+                list.sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
+            } else if (sortBy === "priority") {
+                const order = { High: 3, Medium: 2, Low: 1 };
+                list.sort((a,b) => (order[b.priority] || 0) - (order[a.priority] || 0));
+            } else if (sortBy === "urgent") {
+                const order = { High: 3, Medium: 2, Low: 1 };
+                list.sort((a,b) => {
+                    if ((order[b.priority] || 0) !== (order[a.priority] || 0)) {
+                        return (order[b.priority] || 0) - (order[a.priority] || 0);
+                    }
+                    return new Date(b.createdAt) - new Date(a.createdAt);
+                });
+            }
+
+            filteredPending = list;
+            updateStats(list);
+            renderComplaints(list);
+        }
+
+        function filterComplaints() {
+            applyFilters();
+        }
+
+        function sortComplaints() {
+            applyFilters();
+        }
+
+        function searchComplaints() {
+            applyFilters();
+        }
+
+        async function markInProgress(id) {
+            try {
+                await fetchWithAuth(`/api/admin/complaints/${id}/status`, {
+                    method: "PUT",
+                    body: JSON.stringify({ status: "In Progress", message: "Marked In Progress from Pending page" })
+                });
+                showNotification("Complaint marked as In Progress", "success");
+                await loadPendingComplaints();
+            } catch (err) {
+                console.error(err);
+                showNotification("Failed to update status", "error");
+            }
+        }
+
+        async function resolveComplaint(id) {
+            const notes = prompt("Enter resolution notes for this complaint:");
+            if (notes === null) return;
+            if (!notes.trim()) {
+                showNotification("Please enter resolution notes", "error");
+                return;
+            }
+            try {
+                await fetchWithAuth(`/api/admin/complaints/${id}/status`, {
+                    method: "PUT",
+                    body: JSON.stringify({ status: "Resolved", message: notes })
+                });
+                showNotification("Complaint marked as Resolved", "success");
+                await loadPendingComplaints();
+            } catch (err) {
+                console.error(err);
+                showNotification("Failed to resolve complaint", "error");
+            }
+        }
+
+        function refreshComplaints() {
+            loadPendingComplaints();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = getToken();
+            if (!token) {
+                window.location.href = "admin-login.html";
+                return;
+            }
+
+            document.getElementById("search").addEventListener("keypress", (e) => {
+                if (e.key === "Enter") searchComplaints();
+            });
+
+            loadPendingComplaints();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Complaint Portal</title>
+    <link rel="stylesheet" href="splash.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="splash-container">
+        <div class="splash-content">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <h1>CollegeComplaint</h1>
+            </div>
+            
+            <div class="splash-animation">
+                <div class="animation-circle"></div>
+                <div class="animation-circle"></div>
+                <div class="animation-circle"></div>
+            </div>
+            
+            <p class="splash-text">Your Voice Matters. Get Issues Resolved.</p>
+            
+            <button class="get-started-btn" onclick="startApp()">
+                Get Started <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <div class="splash-footer">
+            <p>College Complaint Management System</p>
+        </div>
+    </div>
+
+    <script>
+        function startApp() {
+            window.location.href = 'home.html';
+        }
+        
+        // Auto redirect after 5 seconds
+        setTimeout(() => {
+            startApp();
+        }, 3000);
+    </script>
+</body>
+</html>

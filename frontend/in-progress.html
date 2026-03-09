@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>In-Progress Complaints - Admin Portal</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+
+    <style>
+        .container { padding: 25px; }
+        .complaint-box {
+            background: #fff;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            border-left: 5px solid #007bff;
+            box-shadow: 0 2px 8px rgba(0,0,0,.1);
+        }
+        .complaint-box h3 { margin-bottom: 8px; color: #1d3557; }
+        .meta { font-size: 14px; color: #666; margin-bottom: 12px; }
+        .actions { margin-top: 12px; display: flex; gap: 10px; }
+        .btn { padding: 8px 14px; border-radius: 5px; font-size: 14px; cursor: pointer; border: none; }
+        .res { background: #28a745; color: #fff; }
+        .pend { background: #ffc107; color: #212529; }
+        .loading { text-align:center; margin-top:40px; font-size:18px; color:#607d8b; }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <div class="sidebar-header"><h2>Admin Portal</h2></div>
+    <nav class="sidebar-nav">
+        <a href="admin.html" class="nav-item"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="all-complaint.html" class="nav-item"><i class="fas fa-list"></i> All Complaints</a>
+        <a href="pending.html" class="nav-item"><i class="fas fa-clock"></i> Pending</a>
+        <a href="inprogress.html" class="nav-item active"><i class="fas fa-spinner"></i> In-Progress</a>
+        <a href="resolved.html" class="nav-item"><i class="fas fa-check-circle"></i> Resolved</a>
+        <a href="reports.html" class="nav-item"><i class="fas fa-chart-bar"></i> Reports</a>
+    </nav>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+    <header class="top-header">
+        <h1>In-Progress Complaints</h1>
+        <p>Complaints currently under processing</p>
+    </header>
+
+    <div class="container">
+        <div id="list" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading complaints...
+        </div>
+    </div>
+</div>
+
+<script>
+const TOKEN = localStorage.getItem("token");
+const API_URL = "http://localhost:5000/api/admin/complaints";
+
+// Load complaints from backend
+async function loadComplaints() {
+    try {
+       
+        const res = await fetch(API_URL, {
+            headers: { "Authorization": `Bearer ${TOKEN}` }
+        });
+        const json = await res.json();
+        if (!json.success) return empty();
+        console.log(json)
+        render(json.data);
+    } catch {
+        empty();
+    }
+}
+
+// If nothing found
+function empty() {
+    document.getElementById("list").innerHTML =
+        `<div class="loading">No In-Progress complaints</div>`;
+}
+
+// UI render
+function render(all) {
+    const container = document.getElementById("list");
+
+    const inProgress = all.filter(c => {
+        if (!c.status) return false;
+        const s = c.status.toLowerCase().replace(/ /g, "");
+        return ["in-progress","inprogress","processing","working"].includes(s);
+    });
+
+    if (inProgress.length === 0) return empty();
+
+    container.innerHTML = inProgress.map(c => `
+        <div class="complaint-box">
+            <h3>${c.category}</h3>
+            <div class="meta">
+                <b>Tracking ID:</b> ${c.trackingId} ❤️
+                <b>Student Name:</b> ${c.studentName}
+                <b>Department:</b> ${c.department}
+            </div>
+            <p>${c.complaintText}</p>
+            <p><b>Student:</b> ${c.studentEmail}</p>
+
+            <div class="actions">
+                <button class="btn res" onclick="updateStatus('${c._id}', 'Resolved')">
+                    <i class="fas fa-check"></i> Mark Resolved
+                </button>
+                <button class="btn pend" onclick="updateStatus('${c._id}', 'Pending')">
+                    <i class="fas fa-redo"></i> Move to Pending
+                </button>
+            </div>
+        </div>
+    `).join("");
+}
+
+// Update status
+async function updateStatus(id, status) {
+    await fetch(`http://localhost:5000/api/admin/complaints/${id}/status`, {
+        method: "PUT",
+        headers: {
+            "Authorization": `Bearer ${TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ status })
+    });
+    loadComplaints();
+}
+
+loadComplaints();
+</script>
+
+</body>
+</html>

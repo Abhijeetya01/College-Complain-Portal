@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - College Complaint Portal</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Student Portal</span>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="student-dashboard.html" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="complaint-form.html?type=normal" class="nav-item">
+                <i class="fas fa-edit"></i>
+                <span>Submit Complaint</span>
+            </a>
+            <a href="complaint-form.html?type=anonymous" class="nav-item">
+                <i class="fas fa-user-secret"></i>
+                <span>Anonymous Complaint</span>
+            </a>
+            <a href="track-complaint.html" class="nav-item">
+                <i class="fas fa-search"></i>
+                <span>Track Complaint</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>My Profile</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button id="logoutBtn" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <h1>Student Dashboard</h1>
+                <p id="welcomeMessage">Welcome back!</p>
+            </div>
+            <div class="header-right">
+                <div class="user-profile" onclick="toggleProfileMenu()">
+                    <img id="userAvatar" src="image/avatar.png" alt="Profile">
+                    <span id="userName">Student Name</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div id="profileMenu" class="profile-menu">
+                    <a href="profile.html"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="track-complaint.html"><i class="fas fa-search"></i> Track Complaint</a>
+                    <a href="role-select.html" id="logoutBtnMobile"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="pendingCount">0</h3>
+                    <p>Pending Complaints</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon in-progress">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="progressCount">0</h3>
+                    <p>In Progress</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon resolved">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="resolvedCount">0</h3>
+                    <p>Resolved</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalCount">0</h3>
+                    <p>Total Complaints</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-cards">
+                <div class="action-card" onclick="location.href='complaint-form.html?type=normal'">
+                    <div class="action-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>Submit Complaint</h3>
+                    <p>Report an issue with your details</p>
+                    <button class="action-btn">Get Started</button>
+                </div>
+                
+                <div class="action-card" onclick="location.href='complaint-form.html?type=anonymous'">
+                    <div class="action-icon anonymous">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <h3>Anonymous Complaint</h3>
+                    <p>Submit without revealing your identity</p>
+                    <button class="action-btn">Submit Anonymously</button>
+                </div>
+                
+                <div class="action-card" onclick="location.href='track-complaint.html'">
+                    <div class="action-icon track">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Track Complaint</h3>
+                    <p>Check status of your submitted complaints</p>
+                    <button class="action-btn">Track Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Complaints -->
+        <div class="recent-complaints">
+            <div class="section-header">
+                <h2>Recent Complaints</h2>
+                <a href="complaint-form.html ?type=normal" class="view-all">Submit New +</a>
+            </div>
+            <div id="complaintsList" class="complaints-list">
+                <div class="loading">Loading your complaints...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="student-dashboard.js"></script>
+</body>
+</html>

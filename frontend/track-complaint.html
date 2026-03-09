@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Complaint - College Complaint Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nav">
+                <div class="nav-brand">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Track Complaint</span>
+                </div>
+                <div class="nav-links">
+                    <a href="home.html" class="nav-link">Home</a>
+                    <a href="login.html" class="nav-link">Student Login</a>
+                    <a href="admin-login.html" class="nav-link admin-btn">Admin</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="track-section">
+        <div class="container">
+            <div class="track-header">
+                <h1>Track Your Complaint</h1>
+                <p>Enter your complaint tracking ID to check the current status</p>
+            </div>
+
+            <div class="track-search">
+                <div class="search-box">
+                    <input type="text" id="trackingId" placeholder="Enter Tracking ID (e.g., COMP123456)" maxlength="12">
+                    <button id="trackBtn" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Track Complaint
+                    </button>
+                </div>
+                <div class="search-help">
+                    <p><i class="fas fa-info-circle"></i> Your tracking ID was provided when you submitted the complaint</p>
+                </div>
+            </div>
+
+            <div id="trackResult" class="track-result">
+                <!-- Results will be displayed here -->
+            </div>
+
+            <div class="track-features">
+                <h2>Complaint Status Guide</h2>
+                <div class="status-guide">
+                    <div class="status-item">
+                        <span class="status-badge status-pending">Pending</span>
+                        <p>Your complaint has been received and is awaiting review</p>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-badge status-in-progress">In Progress</span>
+                        <p>Your complaint is being processed by the concerned department</p>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-badge status-resolved">Resolved</span>
+                        <p>Your complaint has been successfully resolved</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="track.js"></script>
+</body>
+</html>

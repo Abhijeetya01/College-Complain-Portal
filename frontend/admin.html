@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - College Complaint Portal</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin Portal</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="admin.html" class="nav-item active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="all-complaint.html" class="nav-item">
+                <i class="fas fa-inbox"></i>
+                <span>All Complaints</span>
+                <span class="nav-badge" id="totalComplaintsBadge">0</span>
+            </a>
+            <a href="in-progress.html" class="nav-item">
+                <i class="fas fa-clock"></i>
+                <span>in-progress</span>
+            </a>
+            <a href="pending.html" class="nav-item">
+                <i class="fas fa-clock"></i>
+                <span>Pending</span>
+                <span class="nav-badge" id="pendingBadge">0</span>
+            </a>
+            <a href="resolved.html" class="nav-item">
+                <i class="fas fa-check-circle"></i>
+                <span>Resolved</span>
+                <span class="nav-badge" id="resolvedBadge">0</span>
+            </a>
+            
+            </a>
+            <a href="reports.html" class="nav-item">
+                <i class="fas fa-chart-bar"></i>
+                <span>Reports</span>
+            </a>
+            <a href="admin-profile.html" class="nav-item">
+                <i class="fas fa-user-cog"></i>
+                <span>Admin Profile</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button onclick="adminLogout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <div class="header-left">
+                <h1>Admin Dashboard</h1>
+                <p id="adminWelcome">Welcome back, Administrator!</p>
+                <div class="admin-info">
+                    <span class="admin-role" id="adminRole">System Administrator</span>
+                    <span class="admin-department" id="adminDepartment">All Departments</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-actions">
+                    <button class="btn btn-sm btn-primary" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+                <div class="user-profile" onclick="toggleAdminMenu()">
+                    <img id="adminAvatar" src="../assets/images/admin-avatar.png" alt="Admin">
+                    <div class="profile-info">
+                        <span id="adminName">Admin Name</span>
+                        <small id="adminUsername">username</small>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div id="adminMenu" class="profile-menu">
+                    <a href="admin-profile.html"><i class="fas fa-user-cog"></i> My Profile</a>
+                    <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="admin-login.html" onclick="adminLogout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Overview Stats -->
+        <div class="overview-stats">
+            <div class="stat-card large">
+                <div class="stat-icon total">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalComplaints">0</h3>
+                    <p>Total Complaints</p>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>10% from last week</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card large">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="pendingComplaints">0</h3>
+                    <p>Pending Complaints</p>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-down trend-down"></i>
+                        <span>5% from yesterday</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card large">
+                <div class="stat-icon resolved">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="resolvedComplaints">0</h3>
+                    <p>Resolved Complaints</p>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>8% from last week</span>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card large">
+                <div class="stat-icon efficiency">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="resolutionRate">0%</h3>
+                    <p>Resolution Rate</p>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up trend-up"></i>
+                        <span>3% improvement</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions admin-actions">
+            <h2>Quick Actions</h2>
+            <div class="action-cards">
+                <div class="action-card admin-action" onclick="location.href='pending.html'">
+                    <div class="action-icon urgent">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h3>Review Pending</h3>
+                    <p>Check and process pending complaints</p>
+                    <div class="action-badge" id="urgentCount">0 urgent</div>
+                    <button class="action-btn">Review Now</button>
+                </div>
+                
+                <div class="action-card admin-action" onclick="location.href='complaints.html'">
+                    <div class="action-icon manage">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <h3>Manage All</h3>
+                    <p>View and manage all complaints</p>
+                    <div class="action-badge" id="todayCount">0 today</div>
+                    <button class="action-btn">Manage All</button>
+                </div>
+                
+                <div class="action-card admin-action" onclick="location.href='reports.html'">
+                    <div class="action-icon reports">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>View Reports</h3>
+                    <p>Analytics and performance reports</p>
+                    <div class="action-badge">New data</div>
+                    <button class="action-btn">View Reports</button>
+                </div>
+                
+                <div class="action-card admin-action" onclick="location.href='departments.html'">
+                    <div class="action-icon departments">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3>Departments</h3>
+                    <p>Manage department assignments</p>
+                    <div class="action-badge">6 depts</div>
+                    <button class="action-btn">Manage</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Recent Complaints -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Recent Complaints</h3>
+                    <a href="complaints.html" class="view-all">View All</a>
+                </div>
+                <div id="recentComplaints" class="card-content">
+                    <div class="loading">Loading complaints...</div>
+                </div>
+            </div>
+
+            <!-- Department-wise Distribution -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Department Distribution</h3>
+                    <span class="card-subtitle">Complaints by category</span>
+                </div>
+                <div id="departmentChart" class="card-content">
+                    <div class="loading">Loading chart...</div>
+                </div>
+            </div>
+
+            <!-- Priority Breakdown -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Priority Breakdown</h3>
+                    <span class="card-subtitle">Urgency levels</span>
+                </div>
+                <div id="priorityChart" class="card-content">
+                    <div class="loading">Loading priorities...</div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3>Performance Metrics</h3>
+                    <span class="card-subtitle">This week</span>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-value" id="avgResolutionTime">0h</div>
+                        <div class="metric-label">Avg. Resolution Time</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="satisfactionRate">0%</div>
+                        <div class="metric-label">Satisfaction Rate</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="responseTime">0h</div>
+                        <div class="metric-label">Avg. Response Time</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value" id="efficiencyScore">0%</div>
+                        <div class="metric-label">Efficiency Score</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="dashboard-card full-width">
+            <div class="card-header">
+                <h3>Recent Activity</h3>
+                <span class="card-subtitle">Latest admin actions</span>
+            </div>
+            <div id="adminActivity" class="activity-timeline">
+                <div class="loading">Loading activity...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

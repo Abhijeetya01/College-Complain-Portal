@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Complaints - Admin Portal</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  display: flex;
+  font-family: Arial;
+  background: #f5f7fa;
+}
+.sidebar {
+  width: 260px;
+  background: white;
+  height: 100vh;
+  padding-top: 20px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.08);
+}
+.sidebar-nav a {
+  display: block;
+  padding: 15px 25px;
+  color: #555;
+  text-decoration: none;
+}
+.sidebar-nav a.active {
+  background: #eef4ff;
+  color: #2456e0;
+  border-left: 5px solid #2456e0;
+}
+.main-content {
+  flex: 1;
+  padding: 30px;
+}
+.stat-card {
+  background: white;
+  padding: 22px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border-left: 5px solid #007bff;
+}
+.stat-card.pending { border-left-color: #ffc107;}
+.stat-card.in-progress { border-left-color: #17a2b8;}
+.stat-card.resolved { border-left-color: #28a745;}
+table {
+  width: 100%;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+table th, table td {
+  padding: 14px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+.status-badge {
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-pending { background:#fff3cd;color:#856404;}
+.status-in-progress { background:#cce7ff;color:#004085;}
+.status-resolved { background:#d4edda;color:#155724;}
+.priority-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.priority-high{background:#f8d7da;color:#721c24;}
+.priority-medium{background:#fff3cd;color:#856404;}
+.priority-low{background:#d1ecf1;color:#0c5460;}
+
+.btn-view {
+  background: #1769ff;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.22s;
+  width: 42px;
+  height: 42px;
+}
+.btn-view:hover {
+  background: #0f52cc;
+  transform: scale(1.05);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-success { background:#28a745;color:white;}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content:center;
+  align-items:center;
+  background: rgba(0,0,0,0.45);
+}
+.modal-content {
+  background: white;
+  width: 580px;
+  padding: 25px;
+  border-radius: 10px;
+  animation: popup 0.25s ease-out;
+}
+@keyframes popup {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.close-modal {
+  float: right;
+  cursor: pointer;
+  font-size: 22px;
+}
+@media (max-width: 600px) {
+  .modal-content {
+    width: 92% !important;
+    height: 90% !important;
+    overflow-y: auto;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+     
+            
+  <nav class="sidebar-nav">
+     <i class="fas fa-user-shield"></i>
+                <span>Admin Portal</span>
+    <a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+    <a href="all-complaints.html" class="active"><i class="fas fa-inbox"></i> All Complaints</a>
+    <a href="resolved.html"><i class="fas fa-check-circle"></i> Resolve Complaints</a>
+    <a href="reports.html"><i class="fas fa-chart-bar"></i> Reports</a>
+  </nav>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+  <h1>All Complaints</h1>
+
+  <div class="stat-card"><strong>Total Complaints:</strong> <span id="total">0</span></div>
+  <div class="stat-card pending"><strong>Pending:</strong> <span id="pending">0</span></div>
+  <div class="stat-card in-progress"><strong>In Progress:</strong> <span id="progress">0</span></div>
+  <div class="stat-card resolved"><strong>Resolved:</strong> <span id="resolved">0</span></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Track ID</th><th>Title</th><th>Priority</th><th>Status</th><th>Created</th><th>Email</th><th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"><tr><td colspan="7" style="text-align:center;">Loading...</td></tr></tbody>
+  </table>
+</div>
+
+<!-- Complaint Modal -->
+<div class="modal" id="complaintModal">
+  <div class="modal-content">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+async function loadComplaints() {
+  const token = localStorage.getItem("adminToken");
+  if (!token) return alert("Login again!");
+
+  const res = await fetch("http://localhost:5000/api/admin/complaints", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const result = await res.json();
+  const complaints = result.data;
+
+  document.getElementById("total").innerText = complaints.length;
+  document.getElementById("pending").innerText = complaints.filter(c => c.status === "Pending").length;
+  document.getElementById("progress").innerText = complaints.filter(c => c.status === "In Progress").length;
+  document.getElementById("resolved").innerText = complaints.filter(c => c.status === "Resolved").length;
+
+  document.getElementById("tbody").innerHTML = complaints.length === 0
+    ? `<tr><td colspan="7" style="text-align:center;">No Data Found</td></tr>`
+    : complaints.map(c => `
+      <tr>
+        <td>${c.trackingId}</td>
+        <td>${c.complaintTitle}</td>
+        <td><span class="priority-badge priority-${c.priority.toLowerCase()}">${c.priority}</span></td>
+        <td><span class="status-badge status-${c.status.toLowerCase().replace(" ","-")}">${c.status}</span></td>
+        <td>${new Date(c.createdAt).toLocaleDateString()}</td>
+        <td>${c.studentEmail}</td>
+        <td>
+          <button class="btn-view" onclick="viewComplaint('${c._id}')">
+            <i class="fas fa-eye"></i>
+          </button>
+        </td>
+      </tr>
+    `).join("");
+}
+
+async function viewComplaint(id) {
+  const token = localStorage.getItem("adminToken");
+  const res = await fetch("http://localhost:5000/api/admin/complaints", {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  const complaints = (await res.json()).data;
+  const c = complaints.find(x => x._id === id);
+
+  document.getElementById("modalBody").innerHTML = `
+    <h2>${c.complaintTitle}</h2>
+    <p><strong>Track ID:</strong> ${c.trackingId}</p>
+    <p><strong>Priority:</strong> ${c.priority}</p>
+    <p><strong>Status:</strong> ${c.status}</p>
+    <p><strong>Student Email:</strong> ${c.studentEmail}</p>
+    <p><strong>Description:</strong><br>${c.complaintText}</p>
+    <br>
+    <button class="btn-success" onclick="updateStatus('${id}','In Progress')">Mark In Progress</button>
+    <button class="btn-success" onclick="updateStatus('${id}','Resolved')">Mark Resolved</button>
+  `;
+  document.getElementById("complaintModal").style.display = "flex";
+}
+
+async function updateStatus(id, newStatus) {
+  const token = localStorage.getItem("adminToken");
+  const message = prompt("Add update note:");
+  if (!message) return;
+
+  await fetch(`http://localhost:5000/api/admin/complaints/${id}/status`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ status: newStatus, message })
+  });
+
+  alert("Status Updated ✔");
+  closeModal();
+  loadComplaints();
+}
+
+function closeModal() {
+  document.getElementById("complaintModal").style.display = "none";
+}
+
+document.addEventListener("DOMContentLoaded", loadComplaints);
+</script>
+
+</body>
+</html>
